@@ -373,6 +373,12 @@ function theme_extra_fields_title($variables) {
       $link_title = $title;
   }
   
+  if($node->type == 'call_to_action'){
+      $url = $node->field_cta_description[LANGUAGE_NONE][0]['display_url'];
+      $attributes = $node->field_cta_description[LANGUAGE_NONE][0]['attributes'];
+      $link_title = l($node->title, $url , array('attributes' => $attributes));
+  }
+  
   $output = '<h2 class="node-title">';
   $output .= $link_title;
   $output .= '</h2>';
