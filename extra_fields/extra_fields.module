@@ -379,6 +379,11 @@ function theme_extra_fields_title($variables) {
       $link_title = l($node->title, $url , array('attributes' => $attributes));
   }
   
+  if($node->type == 'event'){
+      $url = $node->field_event_link[LANGUAGE_NONE][0]['url'];
+      $link_title = l($node->title, $url , array('attributes' => array('target'=>'_blank')));
+  }
+  
   $output = '<h2 class="node-title">';
   $output .= $link_title;
   $output .= '</h2>';
@@ -440,8 +445,8 @@ function theme_extra_fields_time_only($variables) {
 function theme_extra_fields_event_detail($variables) {
   $node = $variables['node'];
   $view_mode = $variables['view_mode'];
-  $entity_uri = entity_uri('node', $node);
-  $link = l('more>', $entity_uri['path']);
+  $url = $node->field_event_link[LANGUAGE_NONE][0]['url'];
+  $link = l('more>', $url, array('attributes' => array('target'=>'_blank')));
   
   $output = '<div class="link-to-event">' . $link . '</div>';
   return $output;
