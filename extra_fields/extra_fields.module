@@ -6,6 +6,7 @@
 
 function extra_fields_field_extra_fields() {
   $extra = array();
+  
   foreach (node_type_get_types() as $type) {
     if ($type->has_title) {
       $extra['node'][$type->type]['display']['title'] = array(
@@ -84,6 +85,11 @@ function extra_fields_field_extra_fields() {
       ); 
       $extra['taxonomy_term'][$bundle]['display']['fellows_link_2'] = array(
             'label' => t('Extra Field: Fellows Link 2'),
+            'weight' => 0,
+            'type' => 'hidden',
+      );
+      $extra['taxonomy_term'][$bundle]['display']['hover_text'] = array(
+            'label' => t('Extra Field: Hover Text'),
             'weight' => 0,
             'type' => 'hidden',
       ); 
@@ -191,6 +197,13 @@ function extra_fields_taxonomy_term_view($term, $view_mode, $langcode) {
             '#view_mode' => $view_mode,
         );
     }
+    if($term->vocabulary_machine_name == 'programs' && in_array($view_mode, array('taxonomy_card'))){
+        $term->content['hover_text'] = array(
+            '#theme' => 'extra_fields_term_hover_text',
+            '#term' => $term,
+            '#view_mode' => $view_mode,
+        );
+    }
 }
 
 /**
@@ -226,6 +239,9 @@ function extra_fields_theme($existing, $type, $theme, $path) {
       'variables' => array('term' => NULL, 'view_mode' => NULL),
     ),
     'extra_fields_term_fellows_link' => array(
+      'variables' => array('term' => NULL, 'view_mode' => NULL),
+    ),
+    'extra_fields_term_hover_text' => array(
       'variables' => array('term' => NULL, 'view_mode' => NULL),
     ),
     'extra_fields_add_this' => array(
@@ -303,6 +319,21 @@ function theme_extra_fields_term_title_no_link($variables){
     $output = '<h2 class="taxonomy-title">';
     $output .= t($name);
     $output .= '</h2>';
+    return $output;
+}
+function theme_extra_fields_term_hover_text($variables){
+    $term = $variables['term'];
+    $vocabulary = $term->vocabulary_machine_name;
+    $name = $term->name;
+    $entity_uri = entity_uri('taxonomy_term', $term);
+    $alias = drupal_get_path_alias($entity_uri['path']);
+    $output = '';
+    if(!empty($term->field_hover_text)){
+        $hover_text = $term->field_hover_text[LANGUAGE_NONE][0]['value'];
+        $output = '<a class="card-hover-text" href="' . $alias . '">';
+        $output .= $hover_text;
+        $output .= '</a>';
+    }
     return $output;
 }
 
