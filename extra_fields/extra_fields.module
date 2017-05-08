@@ -372,7 +372,7 @@ function theme_extra_fields_term_fellows_link($variables){
     $view = views_get_view_result('program_fellows', 'page','NULL', $tid);
     $result = count($view);
     if ($result) {
-        $output = l('meet the ' . $name . ' Fellows', '/' . $current_path . '/fellows', array('attributes' => array('class' => array('fellows-link'))));
+        $output = l('meet the ' . $name . ' Cohorts', '/' . $current_path . '/fellows', array('attributes' => array('class' => array('fellows-link'))));
     }
     return $output;
 }
