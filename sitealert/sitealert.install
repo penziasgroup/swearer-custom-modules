@@ -1,0 +1,25 @@
+<?php
+/**
+ * @file
+ * Install, update, and uninstall functions for the sitealert module
+ */
+
+/**
+ * Implements hook_install().
+ */
+function sitealert_install() {
+
+  // Set default variable(s).
+  variable_set('sitealert_enable', FALSE);
+
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function sitealert_uninstall() {
+
+  // Clean up after ourselves.
+  variable_del('sitealert_enable');
+  variable_del('sitealert_message');
+}

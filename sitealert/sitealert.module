@@ -1,0 +1,154 @@
+<?php
+
+/**
+ * @file
+ * Module file for the custom sitealert module.
+ */
+
+/**
+ * Implements hook_update_projects_alter().
+ */
+function sitealert_update_projects_alter(&$projects) {
+  unset($projects['sitealert']);
+}
+
+/**
+ * Implements hook_menu().
+ */
+function sitealert_menu() {
+
+  $items['admin/config/system/sitealert'] = array(
+    'title' => 'Site Alert',
+    'description' => 'Configure Site Alert to display a custom site-wide message.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('sitealert_admin_form'),
+    'access arguments' => array('administer sitealert'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  $items['admin/config/system/sitealert/config'] = array(
+    'title' => 'Config',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function sitealert_permission() {
+  return array(
+    'administer sitealert' => array(
+      'title' => t('Administer Site Alerts'),
+      'description' => t('Allows users to enable and edit the site alert.'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function sitealert_block_info() {
+  $blocks = array();
+  $blocks['sitealert'] = array(
+    'info' => t('Site Alert'),
+  );
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function sitealert_block_view($delta = '') {
+
+  $block = array();
+
+  switch ($delta) {
+    case 'sitealert':
+      $block['subject'] = '';
+      $block['content'] = array(
+        '#markup' => _sitealert_theme(variable_get('sitealert_message', FALSE)),
+        '#attached' => array(
+        'css' => array(
+          drupal_get_path('module', 'sitealert') . '/css/sitealert.css',
+        ),
+        'js' => array(
+          drupal_get_path('module', 'sitealert') . '/js/sitealert.js',
+        ),
+      ),
+    );
+    break;
+  }
+
+  return $block;
+}
+
+/**
+ * Custom form called in sitealert_menu.
+ */
+function sitealert_admin_form($form, &$form_state) {
+
+  drupal_set_title(t('Event Notify'));
+
+  $form['sitealert_enable'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Enable Alert'),
+    '#description' => t('Enable Site Alert'),
+    '#return_value' => 1,
+    '#default_value' => variable_get("sitealert_enable", FALSE),
+    '#options' => array(
+      TRUE => t('Yes'), FALSE => t('No')
+    ),
+  );
+
+  $message = variable_get('sitealert_message', FALSE);
+
+  $form['sitealert_message'] = array(
+    '#type' => 'text_format',
+    '#title' => t('Message'),
+    '#description' => t('Content of the alert message'),
+    '#default_value' => isset($message['value']) ? $message['value'] : '',
+    '#format' => isset($message['format']) ? $message['format'] : filter_default_format(),
+    '#size' => 200,
+  );
+
+  $form['#submit'][] = 'sitealert_admin_form_submit';
+
+  $form['actions']['#type'] = 'actions';
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save configuration'),
+  );
+
+  return $form;
+}
+
+/**
+ * Custom form called in sitealert_admin_form.
+ */
+function sitealert_admin_form_submit($form, &$form_state) {
+  variable_set('sitealert_enable', isset($form_state['input']['sitealert_enable']));
+  variable_set('sitealert_message', $form_state['input']['sitealert_message']);
+  drupal_set_message(t('The configuration options have been saved.'), 'warning');
+}
+
+/**
+ * Custom routine to prepare output content.
+ *
+ * @todo Add a bonafide html themer.
+ */
+function _sitealert_theme($message = array()) {
+
+  $output = '';
+
+  if (variable_get('sitealert_enable')) {
+    if (isset($message['value']) && !empty($message['value']) ) {
+      $output = '<div id="site-alert" class="site-alert" ><div class="close-message">close</div>'
+        . $message['value']
+        . '</div>';
+    }
+  }
+
+  return $output;
+}

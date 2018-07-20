@@ -1,0 +1,26 @@
+.site-alert {
+  background-color: #fffce5;
+  border: 1px solid #ed5;
+  box-sizing: border-box;
+  color: #ed1c24;
+  margin: 0 0 20px;
+  padding: 10px 20px;
+  width:100%;
+}
+
+.site-alert .close-message {
+  background-image: url(images/close.png);
+  background-repeat: no-repeat;
+  cursor: pointer;
+  float: right;
+  height: 0;
+  margin: 0;
+  overflow: hidden;
+  padding: 26px 0 0 0;
+  width: 26px;
+  background-position: right center;
+  background-size: 16px;
+}
+.site-alert p:last-child{
+    margin-bottom: 0;
+}
