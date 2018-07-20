@@ -24,3 +24,6 @@
 .site-alert p:last-child{
     margin-bottom: 0;
 }
+.site-alert a{
+    text-decoration: underline;
+}
